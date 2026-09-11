@@ -3,15 +3,38 @@
     <!-- Hero Section -->
     <section class="page-hero">
       <div class="container">
-        <h1 data-aos="fade-up">博客</h1>
+        <h1 data-aos="fade-up">作者精选</h1>
         <p data-aos="fade-up" data-aos-delay="100">
-          分享技术洞察、行业动态与最佳实践
+          橱窗按「作者 ↔ 原文」管理精选篇，不是同步对方整站。点击后前往作者自己的博客。
         </p>
       </div>
     </section>
 
     <!-- 搜索和筛选 -->
-    <section class="blog-filters section-sm">
+    <section class="blog-filters section-sm" v-if="useShowcase && showcaseAuthors.length > 1">
+      <div class="container">
+        <div class="filters-wrapper">
+          <div class="category-filter">
+            <button
+              @click="selectShowcaseAuthor(null)"
+              :class="['filter-btn', { active: selectedAuthorId === null }]"
+            >
+              全部作者
+            </button>
+            <button
+              v-for="author in showcaseAuthors"
+              :key="author.id"
+              @click="selectShowcaseAuthor(author.id)"
+              :class="['filter-btn', { active: selectedAuthorId === author.id }]"
+            >
+              {{ author.name }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="blog-filters section-sm" v-else-if="!useShowcase">
       <div class="container">
         <div class="filters-wrapper">
           <!-- 搜索框 -->
@@ -64,6 +87,32 @@
         </div>
 
         <!-- 文章列表 -->
+        <div v-else-if="useShowcase && showcase.length" class="posts-grid">
+          <article
+            v-for="item in showcase"
+            :key="item.id"
+            class="post-card"
+          >
+            <div class="post-thumbnail">
+              <div class="thumbnail-placeholder">精选</div>
+            </div>
+            <div class="post-content">
+              <div class="post-meta">
+                <span class="post-date">{{ item.authorName }}</span>
+              </div>
+              <h3 class="post-title">
+                <a :href="item.url" target="_blank" rel="noopener">{{ item.title }}</a>
+              </h3>
+              <div class="post-excerpt">{{ item.excerpt }}</div>
+              <div class="post-footer">
+                <a :href="item.url" class="read-more" target="_blank" rel="noopener">
+                  阅读原文 →
+                </a>
+              </div>
+            </div>
+          </article>
+        </div>
+
         <div v-else-if="posts.length" class="posts-grid">
           <article 
             v-for="post in posts"
@@ -131,7 +180,7 @@
         </div>
 
         <!-- 分页 -->
-        <div v-if="totalPages > 1" class="pagination">
+        <div v-if="!useShowcase && totalPages > 1" class="pagination">
           <button 
             @click="goToPage(currentPage - 1)"
             :disabled="currentPage === 1"
@@ -168,6 +217,20 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getPosts, getCategories as fetchCategories, formatDate, extractExcerpt, type WPPost, type WPCategory } from '@/api/wordpress'
+import {
+  authorsWithPublishedWorks,
+  listShowcaseCards,
+  type ShowcaseCard,
+} from '@/config/showcase'
+
+const showcaseAuthors = authorsWithPublishedWorks()
+const selectedAuthorId = ref<string | null>(null)
+const showcase = computed<ShowcaseCard[]>(() => listShowcaseCards(selectedAuthorId.value))
+const useShowcase = showcaseAuthors.length > 0
+
+function selectShowcaseAuthor(authorId: string | null) {
+  selectedAuthorId.value = authorId
+}
 
 const route = useRoute()
 const router = useRouter()
@@ -289,6 +352,7 @@ const getExcerpt = (post: WPPost) => {
 
 // 监听路由变化
 watch(() => route.query, () => {
+  if (useShowcase) return
   if (route.name === 'blog') {
     const page = parseInt(route.query.page as string) || 1
     if (page !== currentPage.value) {
@@ -300,6 +364,11 @@ watch(() => route.query, () => {
 
 // 初始化
 onMounted(() => {
+  if (useShowcase) {
+    loading.value = false
+    return
+  }
+
   loadCategories()
   
   const pageQuery = route.query.page
@@ -335,7 +404,9 @@ onMounted(() => {
 
   .blog-filters {
     background: var(--bg-light);
-    padding: 40px 0;
+    padding: 24px 0 40px;
+    position: relative;
+    z-index: 1;
 
     .filters-wrapper {
       display: flex;
