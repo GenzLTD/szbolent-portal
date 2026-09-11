@@ -2,7 +2,7 @@
 
 > **同步副本：** 本文档在以下两仓保持 **同文同版**，联调时对照执行  
 > - **后端 / 支付 / 小程序：** `/Users/jason/Projects/looma-zervi/docs/TENCENT_CLOUD_COMMERCE.md`  
-> - **门户前端：** `/Users/jason/Projects/szbolent-portal/docs/TENCENT_CLOUD_COMMERCE.md`  
+> - **门户前端：** `/Users/jason/THOMAS/variety/docs/TENCENT_CLOUD_COMMERCE.md`  
 > **更新规则：** 任一侧修改 checklist 或域名表，**必须同步另一仓**（或注明版本号 + 日期）  
 > **主体与费用选型：** 见 `COMMERCE_ENTITY_DECISION.md`（**§5 香港持股+大陆运营**、§6 费用、§11 选型表）
 

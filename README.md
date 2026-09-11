@@ -1,69 +1,90 @@
-# szbolent-portal
+# Variety
 
-> **www.szbolent.cn** 智能化诗词门户 — 日常工程交付目录  
-> **叙事线：** `bolent-content`（与 JobFirst 分离）
+> **一份入口契约，多端多变体。** szbolent.cn 门户是它的第一个 variant。
 
-继承自 [SurfaceZervi/archive-gitee/szbenyx/bolent/web-public](file:///Users/jason/SurfaceZervi/archive-gitee/szbenyx/bolent/web-public)，集成 WordPress headless、Bolent 诗词 API 与可选 Tatha `poetry_rag`。
+自 `szbolent-portal@74ccc9b`（分支 `cursor/ascend-isv-certification`）迁出。旧仓不再演进，本仓是门户与多端组合层的**唯一开发树**。
 
-## 架构
+## 持有与边界
+
+Variety 持有**入口层**的四件事，且只持有这四件：
+
+| 持有 | 位置 |
+|---|---|
+| 入口契约（分流唯一真源） | `contracts/entry.json` |
+| 路由编排 | `src/composables/useDynamicRouter.ts`（菜单由 Page Engine 驱动） |
+| 后端访问 | `src/api/` |
+| 启停与冒烟 | `docker-compose.yml` · `scripts/smoke.sh` |
+
+**不持有**：诗词 / 认证 / 支付不进本仓；页面文案真源归 Page Engine；不做第二个 CMS、不做第二套后台。
+
+## 拓扑
 
 ```
-szbolent-portal (Vue3 + Vite)     ← 本仓 · :3000
-    ├── Looma API                 ← looma-zervi · :5200
-    │   ├── /v1/poetry/*          ← 诗词浏览、搜索（SQLite + ChromaDB）
-    │   ├── /v1/ask               ← 通用 RAG 问答（原 Tatha RAG 已融入）
-    │   ├── /v1/auth/*            ← JWT 认证
-    │   └── /v1/payment/*         ← 支付（P1）
-    └── WordPress REST API        ← Poetry-modown · :8800
+Portal (Vue3 + Vite · :3000)
+  ├── /v1/menus|pages|permissions → Page Engine :5300   （菜单 / 页面 Schema / RBAC）
+  ├── /v1/*（兜底）                → Looma        :5200   （诗词 / RAG / 认证 / 支付）
+  └── /wp-json                    → WordPress     :8800   （博客 CMS）
 ```
 
-> **注意：** 原 Tatha RAG（planetx-tatha poetry_rag）已完全融入 Looma `backend/src/rag/`，不再需要独立部署。Legacy bolent Sanic `:8001` 已由 Looma API 替代。
+这不是文档描述，而是 `contracts/entry.json` 的内容——开发代理、生产 nginx、冒烟脚本**全部由它生成**。
 
 ## 快速开始
 
 ```bash
-cd /Users/jason/Projects/szbolent-portal
-cp .env.example .env.local
 npm install
-npm run dev
+
+# 内容侧 + 门户（需先启动 Docker Desktop）
+docker compose up -d
+
+# Page Engine（宿主运行，依赖 3306 的 looma 库）
+cd backend && cargo run
+
+# 冒烟：检查项从契约生成，分流规则改了自己会跟着改
+bash scripts/smoke.sh
 ```
 
-访问 http://localhost:3000
+## 契约：改一处，三处生效
 
-## 文档
+```bash
+# 1. 改分流规则 → contracts/entry.json
+# 2. 重新生成 nginx（门户入口 + api.genz.ltd 入口）
+node scripts/gen-entry.mjs
+# 3. 校验产物与契约是否同步（CI 可挂）
+node scripts/gen-entry.mjs --check
+```
+
+详见 [contracts/README.md](./contracts/README.md)。
+
+生产 `location /` 的去向是契约里的一个字段——这是「多变体」的落点：
+
+```jsonc
+"sites": { "portal": { "defaultLocation": { "mode": "upstream" /* → static 则门户接管 */ } } }
+```
+
+## 迁出后修正的两处「没接线」
+
+| # | 缺陷 | 状态 |
+|---|---|---|
+| 1 | 生产 `/v1/` 整段回源 Looma，**Page Engine 的三条分流在生产根本不存在**（本地 vite 有、云端没有）——即 `ARCHITECTURE_DECISION_MEMO` D4 所述"云上若仍整段 /v1 回源错误后端，仿真必挂" | **已修**：契约生成全量分流，`/v1/menus\|pages\|permissions` → `:5300` |
+| 2 | `deploy.sh` 把门户产物上传到 `/var/www/szbolent-portal/dist`，但 `nginx.conf` 的 `location /` 指向 WP `:8080`，**产物从未被 serve** | **已纳入契约**（`defaultLocation` 显式声明）；实际切换（`mode: static`）待门户上线决策 |
+
+## 待收敛（下一刀）
+
+- `deploy.sh`（门户 → `/etc/nginx/conf.d/szbolent.conf`）与 `deploy-wp-aliyun.sh`（WP → `bolent-wp.conf`）装的是 **server_name 相同的两份配置**，后跑的覆盖前者。两条链路需二选一或合并。
+- `docs/` 内多处路径仍指向旧树，需批量校正。
+- `backend/`（Page Engine）本就是多产品底座（`product` 参数 + `restartRouter` 式切换），契约的 variant 机制应与它对齐。
+
+## 文档（路线宪法）
+
+`docs/` 内 21 份为迁出时继承的共识文档，重点：
 
 | 文件 | 说明 |
 |------|------|
-| [docs/DUAL_REPO_WORK_GUIDE.md](./docs/DUAL_REPO_WORK_GUIDE.md) | **双仓协作工作指引（与 looma-zervi 同文同步）** |
-| [docs/PROJECTS_DIRECTORY_AUDIT.md](./docs/PROJECTS_DIRECTORY_AUDIT.md) | **Projects 目录勘查记录（2026-07-03 · 暂留未删）** |
-| [docs/TENCENT_CLOUD_COMMERCE.md](./docs/TENCENT_CLOUD_COMMERCE.md) | **腾讯云备案 / 支付 / P0–P2（与 looma-zervi 同步）** |
-| [docs/LINEAGE.md](./docs/LINEAGE.md) | 溯源与边界 |
-| [docs/INTEGRATION.md](./docs/INTEGRATION.md) | WP / API / Tatha 联调 |
-| [docs/OPERATIONS_MANUAL.md](./docs/OPERATIONS_MANUAL.md) | **运维手册（部署/排障/备份/验证）** |
-| [docs/ARCHITECTURE_DECISION_MEMO.md](./docs/ARCHITECTURE_DECISION_MEMO.md) | 架构决策备忘（Composable 门户边界） |
-| [docs/COMPOSABLE_PORTAL_LEARNING.md](./docs/COMPOSABLE_PORTAL_LEARNING.md) | **Composable 门户学习清单（对标案例）** |
-| [docs/SITE_POSITIONING_MEMO.md](./docs/SITE_POSITIONING_MEMO.md) | **建站定位备忘（文化智能 / 行业信任 / 双线）** |
-| [docs/GROWTH_PORTAL_NAMING.md](./docs/GROWTH_PORTAL_NAMING.md) | **增长型门户称谓 + §8 适配清单**（基线 `6df73a2`：主 CTA 只落 PlanetX，ref 归因冻结） |
-| [SOURCE.json](./SOURCE.json) | 机器可读来源登记 |
-
-## SurfaceZervi 对照
-
-| 用途 | 路径 |
-|------|------|
-| 战略决策 | `SurfaceZervi/GitHub/szjason72/poetries-of-bolent` |
-| WordPress | `SurfaceZervi/GitHub/szjason72/Poetry-modown` |
-| 基线来源 | `SurfaceZervi/archive-gitee/szbenyx/bolent/web-public` |
-| MANIFEST | `SurfaceZervi/MANIFEST.yaml` → `szbolent-portal` |
-
-## 脚本
-
-```bash
-npm run dev      # 开发
-npm run build    # 生产构建 → dist/
-npm run preview  # 预览构建
-npm run deploy   # 部署到 47.115.168.107
-npm run verify   # 运维验证脚本（bash scripts/verify.sh）
-```
+| [ARCHITECTURE_DECISION_MEMO](./docs/ARCHITECTURE_DECISION_MEMO.md) | 架构决策 D1–D6 与验收口径 |
+| [COMPOSABLE_PORTAL_LEARNING](./docs/COMPOSABLE_PORTAL_LEARNING.md) | Composable 门户对标清单 |
+| [SITE_POSITIONING_MEMO](./docs/SITE_POSITIONING_MEMO.md) | 建站定位 |
+| [OPERATIONS_MANUAL](./docs/OPERATIONS_MANUAL.md) | 运维手册（命令已以本仓为准，路径待校正） |
+| [LINEAGE](./docs/LINEAGE.md) | 溯源与边界 |
 
 ## License
 

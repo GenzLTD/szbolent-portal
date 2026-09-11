@@ -18,7 +18,7 @@
     │   端口：:5200 → /v1/poetry/*, /v1/ask, /v1/auth/*
     │
     └── CMS 内容：WordPress（可选博客）
-        本地：:8800 → /wp-json/*   ← 真源：vite.config.ts + docker-compose.wp.yml
+        本地：:8800 → /wp-json/*   ← 真源：vite.config.ts + docker-compose.yml
         生产 compose：127.0.0.1:8080（仅本机，经 Nginx 反代，勿与本地冒烟端口混淆）
 ```
 
@@ -54,20 +54,20 @@ cd /Users/jason/Projects/looma-zervi/backend && ./dev.sh
 curl -s "http://localhost:5200/v1/poetry/browse?per_page=1"
 
 # 2. Page Engine（动态菜单/路由 :5300）
-cd /Users/jason/Projects/szbolent-portal/backend && cargo run
+cd /Users/jason/THOMAS/variety/backend && cargo run
 # 验证：
 curl -s "http://localhost:5300/v1/menus?product=szbolent"
 
 # 3. WordPress（博客 CMS · 本地 :8800）
-cd /Users/jason/Projects/szbolent-portal
-docker compose -f docker-compose.wp.yml up -d
+cd /Users/jason/THOMAS/variety
+docker compose -f docker-compose.yml up -d
 # 验证：
 curl -s "http://localhost:8800/wp-json/wp/v2/posts?per_page=1"
 
 # ─── 前端层 ───
 
 # 4. szbolent-portal（Vite :3000）
-cd /Users/jason/Projects/szbolent-portal && npm run dev
+cd /Users/jason/THOMAS/variety && npm run dev
 ```
 
 本地四端口冒烟：
@@ -108,7 +108,7 @@ curl -s -o /dev/null -w "blog:        %{http_code}\n" http://localhost:3000/blog
 |------|--------|---------|
 | 诗词页为空 | Looma :5200 存活？ | `curl "http://localhost:5200/v1/poetry/browse?per_page=1"` |
 | 菜单/Header异常 | Page Engine :5300 存活？ | `curl "http://localhost:5300/v1/menus?product=szbolent"` |
-| 博客页空白 / 「内容暂不可用」 | WordPress :8800 + MySQL 健康？ | `curl "http://localhost:8800/wp-json/wp/v2/posts?per_page=1"`；`docker compose -f docker-compose.wp.yml ps` |
+| 博客页空白 / 「内容暂不可用」 | WordPress :8800 + MySQL 健康？ | `curl "http://localhost:8800/wp-json/wp/v2/posts?per_page=1"`；`docker compose -f docker-compose.yml ps` |
 | ChatDialog 不出现 | Vite 编译正常？ | `cat /tmp/vite*.log \| tail -20` |
 | 登录失败 | Looma auth 端点？ | `curl -X POST http://localhost:5200/v1/auth/login -H 'Content-Type: application/json' -d '{"email":"beta_admin@looma.test","password":"looma123"}'` |
 | AI 回答为空 | token/consent 有效？ | 检查 localStorage `looma_token` + `looma_consent_ask_rag` |
@@ -128,7 +128,7 @@ ls -lt .playwright-cli/console-*.log | head -1 | xargs cat
 
 # 清理 + 硬重启门户
 kill $(lsof -ti :3000) 2>/dev/null
-cd /Users/jason/Projects/szbolent-portal && npx vite --port 3000 > /tmp/vite.log 2>&1 &
+cd /Users/jason/THOMAS/variety && npx vite --port 3000 > /tmp/vite.log 2>&1 &
 ```
 
 ### 7. 系统检查列表

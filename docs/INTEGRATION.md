@@ -49,7 +49,7 @@
 | 13 | WordPress 代理 | GET | `/wp-json/wp/v2/posts` | :8800（本地） | ✅ |
 | 14 | WordPress 分类 | GET | `/wp-json/wp/v2/categories` | :8800（本地） | ✅ |
 
-> **端口真源：** 本地 WP = `:8800`（`vite.config.ts` + `docker-compose.wp.yml`）。  
+> **端口真源：** 本地 WP = `:8800`（`vite.config.ts` + `docker-compose.yml`）。  
 > 生产 `docker-compose.wp.prod.yml` 绑定 `127.0.0.1:8080` 仅供本机 Nginx 反代，**不要**用 :8080 做本地冒烟。
 
 ---

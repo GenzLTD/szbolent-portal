@@ -1,5 +1,6 @@
 /// <reference types="vitest/config" />
 import { fileURLToPath, URL } from 'node:url';
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import AutoImport from 'unplugin-auto-import/vite';
@@ -10,6 +11,47 @@ import path from 'node:path';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 import { playwright } from '@vitest/browser-playwright';
 const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
+
+// ── 入口契约（分流唯一真源：contracts/entry.json）────────────────────────
+// 改分流规则请改契约文件，不要在下面手写 proxy。生产 nginx 由同一份契约生成：
+//   node scripts/gen-entry.mjs
+interface EntryUpstream {
+  desc?: string;
+  dev: string;
+  prod: string;
+  env?: string;
+  proxyHostHeader?: string;
+}
+interface EntryContract {
+  version: number;
+  dev: { port: number; host: string };
+  upstreams: Record<string, EntryUpstream>;
+  routes: Array<{ prefix: string; upstream: string; desc?: string }>;
+}
+
+const entry: EntryContract = JSON.parse(
+  readFileSync(path.resolve(process.cwd(), 'contracts/entry.json'), 'utf-8')
+);
+
+/**
+ * 契约 → vite proxy。
+ * key 的顺序即匹配优先级：/v1/menus|pages|permissions 必须排在兜底 /v1 之前，
+ * 次序由 contracts/entry.json 的 routes 数组保证（生成器有校验）。
+ */
+function buildProxy(): Record<string, { target: string; changeOrigin: boolean }> {
+  const proxy: Record<string, { target: string; changeOrigin: boolean }> = {};
+  for (const route of entry.routes) {
+    const up = entry.upstreams[route.upstream];
+    if (!up) {
+      throw new Error(`[entry] route ${route.prefix} 指向未定义的上游: ${route.upstream}`);
+    }
+    proxy[route.prefix] = {
+      target: (up.env && process.env[up.env]) || up.dev,
+      changeOrigin: true,
+    };
+  }
+  return proxy;
+}
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
@@ -30,42 +72,10 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3000,
-    host: '0.0.0.0',
+    port: entry.dev.port,
+    host: entry.dev.host,
     open: true,
-    proxy: {
-      // =============================================
-      // Page Engine :5300 — 动态菜单 / 页面 Schema / 权限
-      // =============================================
-      '/v1/menus': {
-        target: 'http://127.0.0.1:5300',
-        changeOrigin: true,
-      },
-      '/v1/pages': {
-        target: 'http://127.0.0.1:5300',
-        changeOrigin: true,
-      },
-      '/v1/permissions': {
-        target: 'http://127.0.0.1:5300',
-        changeOrigin: true,
-      },
-
-      // =============================================
-      // Looma — 诗词 / RAG / Auth / 支付 等
-      // 本地可不启 :5200，默认回源 api.genz.ltd
-      // =============================================
-      '/v1': {
-        target: process.env.VITE_LOOMA_PROXY || 'http://api.genz.ltd',
-        changeOrigin: true,
-      },
-
-      // 代理 WordPress REST API (PoetImmortal 博客)
-      '/wp-json': {
-        target: process.env.VITE_WP_PROXY || 'http://localhost:8800',
-        changeOrigin: true,
-        rewrite: path => path,
-      },
-    }
+    proxy: buildProxy()
   },
   build: {
     outDir: 'dist',
@@ -79,7 +89,7 @@ export default defineConfig({
       extends: true,
       plugins: [
       // The plugin will run tests for the stories defined in your Storybook config
-      // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
+      // See https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
       storybookTest({
         configDir: path.join(dirname, '.storybook')
       })],

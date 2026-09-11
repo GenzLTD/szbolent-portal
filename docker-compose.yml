@@ -1,0 +1,84 @@
+# =============================================================
+# Variety — 本地编排（一键启停）
+#
+#   docker compose up -d                     起全部（内容侧 + 门户）
+#   docker compose up -d mysql wordpress     只起内容侧
+#   docker compose down                      停
+#   docker compose logs -f portal            看门户日志
+#
+# 不在编排内的服务（宿主按需启动，见 contracts/entry.json）：
+#   Page Engine :5300 — cd backend && cargo run      （依赖宿主 3306 的 looma 库）
+#   Looma      :5200 — 默认走远端 api.genz.ltd，本地无需启动
+#
+# 分流规则不在本文件声明，唯一真源是 contracts/entry.json；
+# 下面只注入「容器视角」的覆盖值（服务名代替 127.0.0.1）。
+# =============================================================
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: variety_wp_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: wordpress
+      MYSQL_DATABASE: modown_wp
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    volumes:
+      - variety_wp_mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  wordpress:
+    image: wordpress:6.7-php8.3-apache
+    container_name: variety_wp
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: modown_wp
+      WORDPRESS_TABLE_PREFIX: genz_
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_HOME','http://localhost:8800');
+        define('WP_SITEURL','http://localhost:8800');
+    volumes:
+      - variety_wp_data:/var/www/html
+      # 主题开发（可选）：把本仓的 Astra 子主题直接挂进容器，改完即时生效
+      # - ./design-system/phase3-wordpress/astra-child:/var/www/html/wp-content/themes/bolent-astra-child
+    ports:
+      - "8800:80"
+
+  portal:
+    image: node:22-alpine
+    container_name: variety_portal
+    restart: unless-stopped
+    depends_on:
+      - wordpress
+    working_dir: /app
+    environment:
+      # 容器内以服务名互访；宿主上的 Page Engine 走 host-gateway
+      VITE_WP_PROXY: http://wordpress
+      VITE_PAGE_ENGINE_PROXY: http://host.docker.internal:5300
+      VITE_LOOMA_PROXY: http://api.genz.ltd
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - .:/app
+      - variety_node_modules:/app/node_modules
+    command: sh -c "npm install --ignore-scripts --no-audit --no-fund && npm run dev -- --host 0.0.0.0 --port 3000"
+    ports:
+      - "3000:3000"
+
+volumes:
+  variety_wp_mysql_data:
+  variety_wp_data:
+  variety_node_modules:

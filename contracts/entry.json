@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "note": "入口契约真源。vite proxy / nginx / 冒烟脚本均由此文件驱动，禁止在他处重复声明分流规则。",
+
+  "dev": {
+    "port": 3000,
+    "host": "0.0.0.0"
+  },
+
+  "upstreams": {
+    "page-engine": {
+      "desc": "Page Engine — 菜单 / 页面 Schema / RBAC（Rust + Axum）",
+      "dev": "http://127.0.0.1:5300",
+      "prod": "http://127.0.0.1:5300",
+      "env": "VITE_PAGE_ENGINE_PROXY",
+      "proxyHostHeader": "$host"
+    },
+    "looma": {
+      "desc": "Looma — 诗词 / RAG / 认证 / 支付",
+      "dev": "http://api.genz.ltd",
+      "prod": "http://api.genz.ltd",
+      "env": "VITE_LOOMA_PROXY",
+      "proxyHostHeader": "api.genz.ltd"
+    },
+    "looma-local": {
+      "desc": "Looma 本机实例（api.genz.ltd 那台机器上的 :5200）",
+      "dev": "http://127.0.0.1:5200",
+      "prod": "http://127.0.0.1:5200",
+      "proxyHostHeader": "$host"
+    },
+    "wordpress": {
+      "desc": "WordPress headless — 博客 CMS",
+      "dev": "http://localhost:8800",
+      "prod": "http://127.0.0.1:8080",
+      "env": "VITE_WP_PROXY",
+      "proxyHostHeader": "$host"
+    }
+  },
+
+  "routes": [
+    { "prefix": "/v1/menus", "upstream": "page-engine", "desc": "菜单树（动态路由 + Header 数据源）" },
+    { "prefix": "/v1/pages", "upstream": "page-engine", "desc": "页面 Schema（by-path / CRUD）" },
+    { "prefix": "/v1/permissions", "upstream": "page-engine", "desc": "RBAC 权限查询与校验" },
+    { "prefix": "/v1", "upstream": "looma", "desc": "诗词 / RAG / 认证 / 支付（兜底，须最后声明）" },
+    { "prefix": "/wp-json", "upstream": "wordpress", "desc": "博客 REST 通道" }
+  ],
+
+  "sites": {
+    "portal": {
+      "file": "nginx.conf",
+      "desc": "门户入口 — 阿里云 47.115.168.107",
+      "listen": 80,
+      "defaultServer": true,
+      "serverNames": [
+        "_",
+        "47.115.168.107",
+        "szbolent.cn",
+        "www.szbolent.cn",
+        "szbolent.com.cn",
+        "www.szbolent.com.cn",
+        "bolent.cn",
+        "www.bolent.cn"
+      ],
+      "clientMaxBodySize": "64m",
+      "gzip": true,
+      "defaultLocation": {
+        "mode": "upstream",
+        "upstream": "wordpress",
+        "staticRoot": "/var/www/szbolent-portal/dist",
+        "switchNote": "mode: upstream → WP 内容站（现状）；mode: static → 门户 SPA 产物接管的切换点。改这里 + 重新生成即可。"
+      }
+    },
+    "api": {
+      "file": "nginx-api.genz.ltd.conf",
+      "desc": "api.genz.ltd — Looma API 后端入口（1.14.202.161）",
+      "listen": 80,
+      "defaultServer": false,
+      "serverNames": ["api.genz.ltd"],
+      "allToUpstream": "looma-local"
+    }
+  }
+}

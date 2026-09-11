@@ -1,7 +1,7 @@
 # 溯源与边界
 
 > **叙事线：** `bolent-content`  
-> **交付目录：** `/Users/jason/Projects/szbolent-portal`  
+> **交付目录：** `/Users/jason/THOMAS/variety`  
 > **SurfaceZervi 角色：** 博物馆 + MANIFEST 登记，非日常改代码入口
 
 ## 继承关系
@@ -9,7 +9,7 @@
 ```
 archive-gitee/szbenyx/bolent/web-public   ← 2026-07-03 fork 基线
         ↓
-/Users/jason/Projects/szbolent-portal       ← 本工程（www.szbolent.cn canonical；API 走 api.genz.ltd）
+/Users/jason/THOMAS/variety       ← 本工程（www.szbolent.cn canonical；API 走 api.genz.ltd）
         ↓ 内容 / API / AI
 ├── GitHub/szjason72/Poetry-modown         ← WordPress headless CMS
 ├── /Users/jason/Projects/looma-zervi      ← Looma API（诗词 + RAG + 用户 + 支付）

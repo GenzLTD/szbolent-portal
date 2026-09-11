@@ -28,7 +28,9 @@ ssh "$SERVER" "mkdir -p $REMOTE_DIR/themes $REMOTE_DIR/nginx"
 rsync -avz "$PROJECT_ROOT/docker-compose.wp.prod.yml" "$SERVER:$REMOTE_DIR/"
 rsync -avz "$PROJECT_ROOT/design-system/phase3-wordpress/astra-child/" \
   "$SERVER:$REMOTE_DIR/themes/bolent-astra-child/"
-rsync -avz "$PROJECT_ROOT/scripts/nginx-wp-aliyun.conf" "$SERVER:$REMOTE_DIR/nginx/bolent-wp.conf"
+# 入口配置由契约生成，全站共用一份（不再有 scripts/nginx-wp-aliyun.conf 这份重复副本）
+node "$PROJECT_ROOT/scripts/gen-entry.mjs" >/dev/null
+rsync -avz "$PROJECT_ROOT/nginx.conf" "$SERVER:$REMOTE_DIR/nginx/bolent-wp.conf"
 
 # 2. 服务器初始化（仅首次）
 info "2/5 安装 Docker + Nginx..."

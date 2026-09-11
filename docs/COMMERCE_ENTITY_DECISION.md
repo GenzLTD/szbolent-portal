@@ -2,7 +2,7 @@
 
 > **用途：** 对比「个人 / 个体户 / 大陆企业 / 香港企业 × 境内 / 境外部署」在 **szbolent.cn 诗词门户 + api.genz.ltd Looma API 商业闭环** 下的可行性与成本，供选型决策。
 > **同步副本：**
-> - `/Users/jason/Projects/szbolent-portal/docs/COMMERCE_ENTITY_DECISION.md`
+> - `/Users/jason/THOMAS/variety/docs/COMMERCE_ENTITY_DECISION.md`
 > - `/Users/jason/Projects/looma-zervi/docs/COMMERCE_ENTITY_DECISION.md`
 > **关联文档：** `TENCENT_CLOUD_COMMERCE.md`（P0–P2 执行清单）、`INTEGRATION.md`
 > **免责声明：** 费用为 **2026 年市场行情区间估算**，非报价单；审核规则以腾讯云、工信部、微信支付、微信公众平台最新政策为准。本文不构成法律或税务意见。

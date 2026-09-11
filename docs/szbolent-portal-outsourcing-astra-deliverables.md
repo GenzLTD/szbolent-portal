@@ -584,7 +584,7 @@ src/
 1. **Astra 免费版限制**：不支持 Astra Pro 的高级 Header/Footer Builder（拖拽式）、Mega Menu、Sticky Header 等。但使用 Custom Layouts（免费功能）+ 少量 CSS 可以覆盖 szbolent-portal 的全部需求。
 2. **Elementor 免费版限制**：部分高级 Widget 不可用（如 Portfolio、Forms、Slides），但可用 Gutenberg 原生区块 + 自定义 CSS 替代。
 3. **品牌色统一**：当前 Vue 代码中使用的 #667eea / #764ba2 渐变为模板占位色，外包方需替换为 Bolent 品牌色，确保与 looma-zervi 产品品牌形成区分。
-4. **域名与部署**：WordPress 可部署于现有 Docker Compose 环境（docker-compose.wp.yml），域名指向保持不变。
+4. **域名与部署**：WordPress 可部署于现有 Docker Compose 环境（docker-compose.yml），域名指向保持不变。
 5. **SEO 迁移**：从 Vue SPA 迁移到 WordPress 原生渲染后，SEO 会有显著提升（服务端渲染 + Astra Schema.org），但需做好 301 重定向。
 6. **Storybook 分工**：Astra 外包 **不要求** Vue Storybook 交付；产品 UI 验收在 looma `frontend` Storybook（**:6007**），勿与 portal **:6006** 混淆。
 

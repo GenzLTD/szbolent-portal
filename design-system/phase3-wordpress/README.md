@@ -2,7 +2,7 @@
 
 ## 前置条件
 
-1. **WordPress 6.7+**（已配置于 `docker-compose.wp.yml`，端口 8800）
+1. **WordPress 6.7+**（已配置于 `docker-compose.yml`，端口 8800）
 2. **Astra 免费主题**（从 wordpress.org 安装）
 3. **Contact Form 7 插件**（免费）
 4. **PHP 8.3+**
@@ -59,15 +59,15 @@ cp -r design-system/phase3-wordpress/astra-child /path/to/wp-content/themes/bole
 ## Docker 部署（本项目环境）
 
 ```bash
-# 项目根目录已有 docker-compose.wp.yml
+# 项目根目录已有 docker-compose.yml
 cp .env.example .env.local
-docker compose -f docker-compose.wp.yml up -d
+docker compose -f docker-compose.yml up -d
 
 # WP 后台: http://localhost:8800/wp-admin
 # 前台: http://localhost:8800
 ```
 
-子主题挂载路径已在 `docker-compose.wp.yml` 中通过 `POETRY_MODOWN_WP_CONTENT` 变量配置。
+子主题挂载路径已在 `docker-compose.yml` 中通过 `POETRY_MODOWN_WP_CONTENT` 变量配置。
 
 ## 文件清单
 

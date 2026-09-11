@@ -4,7 +4,7 @@
   "portal_tld": "cn（个人备案 · 内容站）",
   "api_domain": "api.genz.ltd（已部署 · Looma Flask API）",
   "narrative": "bolent-content",
-  "canonical_delivery": "/Users/jason/Projects/szbolent-portal",
+  "canonical_delivery": "/Users/jason/THOMAS/variety",
   "github": {
     "origin": "https://github.com/szpeter2026/szbolent-portal.git",
     "default_branch": "main",
