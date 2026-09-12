@@ -24,7 +24,8 @@ interface EntryUpstream {
 }
 interface EntryContract {
   version: number;
-  dev: { port: number; host: string };
+  /** env: 端口的环境变量出口，供成员在不改共享契约的前提下适配本机端口占用 */
+  dev: { port: number; host: string; env?: string };
   upstreams: Record<string, EntryUpstream>;
   routes: Array<{ prefix: string; upstream: string; desc?: string }>;
 }
@@ -53,6 +54,21 @@ function buildProxy(): Record<string, { target: string; changeOrigin: boolean }>
   return proxy;
 }
 
+/**
+ * 契约 → 开发端口。
+ * env 出口：成员本机 3000 被占用时，设 VITE_DEV_PORT=3xxx 即可，
+ * 不必改共享契约（改契约会进 diff、影响所有人），这是「适配度」的收敛点。
+ */
+function resolveDevPort(dev: EntryContract['dev']): number {
+  const raw = dev.env ? process.env[dev.env] : undefined;
+  if (!raw) return dev.port;
+  const port = Number(raw);
+  if (!Number.isInteger(port) || port <= 0 || port > 65535) {
+    throw new Error(`[entry] ${dev.env}="${raw}" 不是合法端口（应为 1-65535 的整数）`);
+  }
+  return port;
+}
+
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   base: process.env.VITE_BASE_PATH || '/',
@@ -72,7 +88,7 @@ export default defineConfig({
     }
   },
   server: {
-    port: entry.dev.port,
+    port: resolveDevPort(entry.dev),
     host: entry.dev.host,
     open: true,
     proxy: buildProxy()

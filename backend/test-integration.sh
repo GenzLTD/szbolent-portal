@@ -10,7 +10,24 @@ echo "=== Page Engine Service Integration Tests ==="
 echo "Base URL: $BASE"
 echo ""
 
+# ---- 环境前检 ----
+# 服务不可达 → 退 2（环境不足），与「断言失败」（退 1）区分：
+# 成员该看到「你没起 Page Engine」，而不是「测试失败」。
+# 注意：-w '%{http_code}' 在连不上时也会向 stdout 写 "000"，且 curl 自身退出码为 7。
+# 故此处不可在命令替换里再追加 `|| echo 000`（会拼成 "000 000" 使判断失效，已踩过）。
+# 用 `|| true` 让赋值语句本身不触发 set -e 即可，PROBE 拿到的就是 curl 写的 "000"。
+PROBE="$(curl -s -o /dev/null --max-time 3 -w '%{http_code}' "$BASE/v1/menus?product=szbolent" 2>/dev/null)" || true
+if [ "$PROBE" = "000" ]; then
+    echo "❌ 无法连接 $BASE —— 集成测试需要 Page Engine 在跑。"
+    echo "   启动: cd backend && cargo run"
+    echo "   换目标: bash backend/test-integration.sh http://host:port"
+    echo ""
+    exit 2
+fi
+
 # ---- Helper ----
+# 失败必须计数并影响退出码，否则脚本无论对错都退 0（假绿）。
+FAILED=0
 check() {
     local desc="$1"
     local expected="$2"
@@ -19,6 +36,7 @@ check() {
         echo "  ✅ $desc"
     else
         echo "  ❌ $desc (expected: $expected)"
+        FAILED=$((FAILED + 1))
     fi
 }
 
@@ -85,3 +103,9 @@ check "Admin endpoint without token returns 401" '"unauthorized"' "$RESP"
 
 echo ""
 echo "=== Integration Test Complete ==="
+if [ "$FAILED" -gt 0 ]; then
+    echo "❌ ${FAILED} 项失败"
+    exit 1
+fi
+echo "✅ 全部通过"
+exit 0

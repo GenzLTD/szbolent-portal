@@ -1,13 +1,20 @@
 #!/usr/bin/env bash
 # =============================================
-# szbolent-portal 运维验证脚本
-# 用法: bash scripts/verify.sh
-# 在本地执行，验证整个部署链路
+# szbolent-portal 生产回执脚本（不是验证脚本）
+# 用法: bash scripts/report-prod.sh
+# 在本地执行，对线上 47.115.168.107 做只读体检并打印回执。
+#
+# 与「验证」的区别：结论依赖公网 + root SSH + 目标机当时的状态，
+# 换台机器或换个时间跑就不是同一个结论，因此不能作为「仓的断言」。
+# 可在任意机器复现的断言，请用: bash scripts/verify-offline.sh
 # =============================================
 set -euo pipefail
 
 SERVER="${VERIFY_SERVER:-root@47.115.168.107}"
 SSH_TIMEOUT="${VERIFY_SSH_TIMEOUT:-5}"
+# 计数必须用赋值，不可写成 ((PASS++))：
+# 在 set -e 下，((PASS++)) 当 PASS=0 时算术表达式结果为 0 → 返回状态 1 → 脚本静默中止，
+# 于是本回执永远打不出来（第一项检查后即退出）。已实证，勿改回。
 PASS=0
 FAIL=0
 SKIP=0
@@ -23,10 +30,10 @@ check() {
   printf "  [%s] ... " "$name"
   if eval "$cmd" &>/dev/null; then
     echo -e "${GREEN}✅ PASS${NC}"
-    ((PASS++))
+    PASS=$((PASS + 1))
   else
     echo -e "${RED}❌ FAIL${NC}"
-    ((FAIL++))
+    FAIL=$((FAIL + 1))
   fi
 }
 
@@ -37,21 +44,21 @@ check_conditional() {
   printf "  [%s] ... " "$name"
   if [ "$FAIL" -gt 0 ]; then
     echo -e "${YELLOW}⏭️  SKIP (前置失败)${NC}"
-    ((SKIP++))
+    SKIP=$((SKIP + 1))
     return
   fi
   if eval "$cmd" &>/dev/null; then
     echo -e "${GREEN}✅ PASS${NC}"
-    ((PASS++))
+    PASS=$((PASS + 1))
   else
     echo -e "${RED}❌ FAIL${NC}"
-    ((FAIL++))
+    FAIL=$((FAIL + 1))
   fi
 }
 
 echo ""
 echo "============================================"
-echo "  szbolent-portal 运维验证"
+echo "  szbolent-portal 生产回执"
 echo "  时间: $(date '+%Y-%m-%d %H:%M:%S')"
 echo "  目标: ${SERVER}"
 echo "============================================"
@@ -62,11 +69,10 @@ echo "--- 本地构建 ---"
 check "npm 依赖完整" \
   'test -d node_modules && test -d node_modules/vue'
 
+# 原写法为 'npx vue-tsc --noEmit 2>/dev/null || true' —— 恒真，本项永远 PASS（假绿）。
+# 已去掉 || true：typecheck 真失败时本项必须 FAIL。
 check "TypeScript 编译通过" \
-  'npx vue-tsc --noEmit 2>/dev/null || true'
-# 注意：如果 typecheck 失败，后续步骤可能仍可继续
-PASS_BEFORE=$PASS
-FAIL_BEFORE=$FAIL
+  'test -d node_modules && npx vue-tsc --noEmit'
 
 echo ""
 echo "--- 前端页面 (公网 HTTP) ---"
