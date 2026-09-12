@@ -18,7 +18,8 @@
     "deploy": "bash scripts/deploy.sh",
     "smoke:local": "bash scripts/smoke-local.sh",
     "verify:offline": "bash scripts/verify-offline.sh",
-    "report:prod": "bash scripts/report-prod.sh"
+    "report:prod": "bash scripts/report-prod.sh",
+    "report:db-env": "bash scripts/report-db-env.sh"
   },
   "dependencies": {
     "aos": "^2.3.4",

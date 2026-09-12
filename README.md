@@ -36,12 +36,24 @@ npm install
 # 内容侧 + 门户（需先启动 Docker Desktop）
 docker compose up -d
 
-# Page Engine（宿主运行，依赖 3306 的 looma 库）
+# Page Engine（宿主运行，依赖 3306 的 looma 库 —— 本机没有该库时先出 DB 回执，见下）
 cd backend && cargo run
 
 # 冒烟：检查项从契约生成，分流规则改了自己会跟着改
 bash scripts/smoke.sh
 ```
+
+## 验证与回执（勿混两类）
+
+| 类型 | 命令 | 结论性质 |
+|---|---|---|
+| **断言** | `npm run verify:offline` | 与机器无关：L1 契约→产物同步 + L2 类型/构建。成员 `npm ci` 后可复现；退 1 = 仓的问题，退 2 = 环境不足 |
+| 回执 | `npm run report:prod` | 打公网 + SSH 到生产机，结论随时点与网络而变 |
+| 回执 | `npm run report:db-env` | 打本机 DB 环境（MySQL / PostgreSQL / pgvector），只读、不打印口令 |
+
+DB 环境是典型的「结论随机器而变」：维护者本机没有的东西，成员可能有，反之亦然。
+所以 pgvector / MySQL 的可用性**不由某一台机器断言**，而是各成员跑 `report:db-env` 回传后汇总。
+口径、四态解读与回传模板见 [docs/DB_ENV_PROBE.md](./docs/DB_ENV_PROBE.md)。
 
 ## 契约：改一处，三处生效
 
