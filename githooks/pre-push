@@ -1,12 +1,19 @@
 #!/bin/sh
-# [genz-guard] block direct pushes to main/master - changes must go through branch + PR
-# Enable once after clone:  sh scripts/setup.sh
+# [genz-guard] block direct pushes of main/master - use branch + PR (see MAINTAINERS.md)
+block() {
+  echo "[genz-guard] BLOCKED: direct push of main/master. Push a feature branch and open a PR."
+  exit 1
+}
+# 1) standard pre-push contract: inspect ref update lines on stdin
 while read local_ref local_sha remote_ref remote_sha; do
   case "$remote_ref" in
-    refs/heads/main|refs/heads/master)
-      echo "[genz-guard] BLOCKED: direct push to $remote_ref. Push a feature branch and open a PR (see MAINTAINERS.md)."
-      exit 1
-      ;;
+    refs/heads/main|refs/heads/master) block ;;
   esac
 done
+# 2) fallback for git builds that deliver empty stdin: block when pushing FROM main checkout
+branch=$(git branch --show-current 2>/dev/null)
+case "$branch" in
+  main|master) block ;;
+esac
 exit 0
+
