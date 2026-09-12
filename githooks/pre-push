@@ -1,0 +1,12 @@
+#!/bin/sh
+# [genz-guard] block direct pushes to main/master - changes must go through branch + PR
+# Enable once after clone:  sh scripts/setup.sh
+while read local_ref local_sha remote_ref remote_sha; do
+  case "$remote_ref" in
+    refs/heads/main|refs/heads/master)
+      echo "[genz-guard] BLOCKED: direct push to $remote_ref. Push a feature branch and open a PR (see MAINTAINERS.md)."
+      exit 1
+      ;;
+  esac
+done
+exit 0
