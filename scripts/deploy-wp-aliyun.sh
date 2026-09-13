@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# deploy-wp-aliyun.sh — 部署 Bolent WordPress 到阿里云 ECS
+# deploy-wp-aliyun.sh — 部署 深伯乐 WordPress 到阿里云 ECS
 # 用法: ./scripts/deploy-wp-aliyun.sh
 #
 set -euo pipefail
@@ -18,7 +18,7 @@ ok()    { echo -e "${GREEN}[wp-deploy]${NC} $*"; }
 
 echo ""
 info "============================================"
-info "  Bolent WordPress → 阿里云 $SERVER"
+info "  深伯乐 WordPress → 阿里云 $SERVER"
 info "============================================"
 echo ""
 
@@ -101,7 +101,7 @@ ok "============================================"
 echo ""
 info "下一步（浏览器操作）："
 info "  1. 打开安装向导，创建管理员账号"
-info "  2. 外观 → 安装 Astra 父主题 → 启用 Bolent Astra Child"
+info "  2. 外观 → 安装 Astra 父主题 → 启用 深伯乐 Astra Child"
 info "  3. 插件 → 安装 Contact Form 7"
 info "  4. 设置 → 固定链接 → 文章名"
 echo ""

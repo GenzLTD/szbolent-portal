@@ -7,7 +7,7 @@
           <div class="footer-col">
             <div class="footer-logo">
               <router-link to="/" class="logo-link">
-                <img src="/bolent-logo-white.svg" alt="Bolent" class="logo-img" />
+                <img src="/bolent-logo-white.svg" alt="深伯乐" class="logo-img" />
               </router-link>
             </div>
             <p class="footer-desc">
@@ -44,6 +44,23 @@
             </ul>
           </div>
 
+          <!-- 生态 — 三主体互链（门户 ↔ 作者博客 ↔ PlanetX 产品）
+               产品入口统一取自 src/config/growth.ts，不在此硬编码 -->
+          <div class="footer-col">
+            <h4 class="footer-title">生态</h4>
+            <ul class="footer-links">
+              <li>
+                <a href="https://szbolent.cn" target="_blank" rel="noopener">作者博客</a>
+              </li>
+              <li>
+                <a :href="planetxUrl" target="_blank" rel="noopener">PlanetX 人格测评</a>
+              </li>
+              <li>
+                <a href="https://genz.ltd" target="_blank" rel="noopener">GenZ PlanetX（海外）</a>
+              </li>
+            </ul>
+          </div>
+
           <!-- 联系方式 -->
           <div class="footer-col">
             <h4 class="footer-title">联系我们</h4>
@@ -66,7 +83,7 @@
     <div class="footer-bottom">
       <div class="container">
         <div class="footer-bottom-content">
-          <p>&copy; {{ currentYear }} 深圳伯乐特科技有限公司 | <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">粤ICP备2024000000号</a></p>
+          <p>&copy; {{ currentYear }} 深伯乐（深圳）科技有限公司 | <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">粤ICP备2026134984号-1</a></p>
           <div class="footer-bottom-links">
             <router-link to="/privacy">隐私政策</router-link>
             <router-link to="/terms">服务条款</router-link>
@@ -81,8 +98,12 @@
 import { computed, onMounted } from 'vue'
 import { Github, MapPin, Mail } from 'lucide-vue-next'
 import { useDynamicRouter } from '@/composables/useDynamicRouter'
+import { PLANETX_BASE } from '@/config/growth'
 
 const { menus, loadMenus } = useDynamicRouter()
+
+/** PlanetX 产品入口 —— 统一取自 growth 配置（此前 growth.ts 无任何消费方，属死配置） */
+const planetxUrl = PLANETX_BASE
 
 /** 快捷链接：来自 Page Engine 的动态菜单（去重首页、过滤外链） */
 const quickLinks = computed(() => {

@@ -3,7 +3,7 @@
 > **www.szbolent.cn** 智能化诗词门户 — 日常工程交付目录  
 > **叙事线：** `bolent-content`（与 JobFirst 分离）
 
-继承自 [SurfaceZervi/archive-gitee/szbenyx/bolent/web-public](file:///Users/jason/SurfaceZervi/archive-gitee/szbenyx/bolent/web-public)，集成 WordPress headless、Bolent 诗词 API 与可选 Tatha `poetry_rag`。
+继承自 [SurfaceZervi/archive-gitee/szbenyx/bolent/web-public](file:///Users/jason/SurfaceZervi/archive-gitee/szbenyx/bolent/web-public)，集成 WordPress headless、深伯乐 诗词 API 与可选 Tatha `poetry_rag`。
 
 ## 架构
 

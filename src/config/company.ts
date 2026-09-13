@@ -1,18 +1,18 @@
 /**
- * Bolent 门户品牌配置 v2.1
+ * 深伯乐 门户品牌配置 v2.1
  * 对齐双域名架构：.cn（个人备案·内容站）+ .com.cn（企业备案·API/商业）
- * 门户域名：www.szbolent.cn
+ * 门户域名：szbolent.com.cn（企业主体，2026-09-13 上线）
  */
 
 export const companyInfo = {
-  name: 'Bolent',
-  fullName: 'Bolent Digital Intelligence',
+  name: '深伯乐',
+  fullName: '深伯乐（深圳）科技有限公司',
   chineseName: '数智企业门户',
   tagline: '以工程精度交付价值，以人文视角连接未来',
-  slogan: 'Bolent — 融合科技与人文的数智企业',
+  slogan: '深伯乐 — 融合科技与人文的数智企业',
 
   description:
-    'Bolent 是一家融合现代科技与文化底蕴的数智企业。我们提供软件开发、数字化、自动化、IT 管理与 IT 外包等全方位服务，并以 AI 读诗为特色板块，让技术在诗意中落地。',
+    '深伯乐 是一家融合现代科技与文化底蕴的数智企业。我们提供软件开发、数字化、自动化、IT 管理与 IT 外包等全方位服务，并以 AI 读诗为特色板块，让技术在诗意中落地。',
 
   contact: {
     email: 'hello@szbolent.com.cn',
@@ -23,14 +23,14 @@ export const companyInfo = {
   address: {
     main: {
       city: '中国',
-      full: 'www.szbolent.cn',
+      full: 'www.szbolent.com.cn',
       postcode: '',
     },
   },
 
   social: {
     wechat: {
-      name: 'SZBolent',
+      name: '深伯乐',
       qrcode: '/images/qrcode/wechat.jpg',
     },
     github: {
@@ -82,12 +82,12 @@ export const companyInfo = {
 }
 
 export const seoConfig = {
-  defaultTitle: 'Bolent — 数智企业门户',
-  titleTemplate: '%s | Bolent',
+  defaultTitle: '深伯乐 — 数智企业门户',
+  titleTemplate: '%s | 深伯乐',
   defaultDescription:
-    'Bolent 是融合现代科技与文化底蕴的数智企业，提供软件开发、数字化、IT管理及AI读诗等全方位服务；HarmonyOS 生态与昇腾 ISV 认证服务商。',
+    '深伯乐 是融合现代科技与文化底蕴的数智企业，提供软件开发、数字化、IT管理及AI读诗等全方位服务；HarmonyOS 生态与昇腾 ISV 认证服务商。',
   keywords: [
-    'Bolent',
+    '深伯乐',
     '数智企业',
     '软件开发',
     'AI读诗',
@@ -98,7 +98,7 @@ export const seoConfig = {
     '昇腾 ISV',
     '昇腾认证服务商',
   ],
-  siteUrl: 'https://www.szbolent.cn',
+  siteUrl: 'https://szbolent.com.cn',
   ogImage: '/images/og-image.jpg',
 }
 

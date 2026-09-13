@@ -4,7 +4,7 @@
       <div class="header-wrapper">
         <!-- Logo -->
         <router-link to="/" class="logo">
-          <img src="/bolent-logo.svg" alt="Bolent" class="logo-img" />
+          <img src="/bolent-logo.svg" alt="深伯乐" class="logo-img" />
         </router-link>
 
         <!-- 桌面导航 — 数据源：Page Engine :5300 GET /v1/menus?product=szbolent -->

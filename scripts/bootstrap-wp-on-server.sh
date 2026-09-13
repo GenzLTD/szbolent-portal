@@ -22,7 +22,7 @@ if ! docker compose version &>/dev/null; then
   chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 fi
 
-info "2/6 拉取 Bolent 子主题..."
+info "2/6 拉取 深伯乐 子主题..."
 mkdir -p "$REMOTE_DIR/themes"
 if [[ -d /tmp/szbolent-portal/design-system/phase3-wordpress/astra-child ]]; then
   rm -rf "$REMOTE_DIR/themes/bolent-astra-child"
@@ -160,7 +160,7 @@ echo "============================================"
 echo ""
 echo "下一步:"
 echo "  1. 浏览器打开安装向导，创建管理员"
-echo "  2. 外观 → 安装 Astra → 启用 Bolent Astra Child"
+echo "  2. 外观 → 安装 Astra → 启用 深伯乐 Astra Child"
 echo "  3. 插件 → Contact Form 7"
 echo "  4. 设置 → 固定链接 → 文章名"
 echo ""
