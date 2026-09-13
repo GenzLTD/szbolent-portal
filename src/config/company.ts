@@ -2,14 +2,27 @@
  * 深伯乐 门户品牌配置 v2.4
  *
  * 双域名架构：`.cn`（个人备案 · 内容站）+ `.com.cn`（企业备案 · 门户/API）
- * 门户域名：`https://www.szbolent.com.cn` —— **企业备案**
- *   备案号 `粤ICP备2026134984号-1` · 主体 深伯乐（深圳）科技有限公司
- *   生产主机 `14.29.216.219`（天翼云）· 门户与 API 同机（nginx `/v1/` 反代本机 Looma `:5203`）
- *   ⚠️ 备案云资源原为 `1.14.202.161(gz)`（腾讯云）；改迁天翼后须在**天翼云**办「新增接入备案」
- *   ⚠️ 遗留线（端口口径不同，勿混用）：`www.szbolent.cn` 个人备案 WP（阿里云 `47.115.168.107`）
- *     + `api.genz.ltd`（腾讯云 gz，Looma 宿主 `:5200`）
  *
- * 天翼站点 nginx 见 `nginx-tianyi-portal.conf`；待执行项见 `docs/SZBOLENT_COM_CN_CUTOVER_CHECKLIST.md`
+ * 企业域 `https://www.szbolent.com.cn` —— 门户 + API **同机**
+ *   备案号 `粤ICP备2026134984号-1` · 主体 深伯乐（深圳）科技有限公司
+ *   生产主机 `1.14.202.161`（腾讯云）· 企业备案接入商 = 腾讯云
+ *     （备案硬规则：接入商必须与企业主体一致，故企业站不走阿里云个人账号）
+ *   nginx 站点 `/etc/nginx/sites-available/szbolent-portal-tencent`
+ *     （仓内参考副本 `nginx-tencent-portal.conf`；公网实测 2026-09-13）
+ *     · `/`          → SPA dist `/var/www/szbolent-portal/dist`
+ *     · `/v1/`       → 本机 Looma `127.0.0.1:5200`（同源，免 CORS、不出公网）
+ *     · `/health`    → 本机 Looma `127.0.0.1:5200`
+ *     · `/wp-json/`  → 本机 WordPress `127.0.0.1:8080`
+ *     · 证书 `/etc/letsencrypt/live/szbolent.com.cn/`（certbot，SAN 覆盖三域名）
+ *
+ *   ⚠️ 端口口径（勿混用）：腾讯云 / 本机 Looma = `:5200`；天翼 `14.29.216.219` = `:5203`
+ *
+ * `nginx-tianyi-portal.conf`（2026-09-11 方案 A：门户改迁天翼）**未采用**，仅存档参考：
+ *   2026-09-12 决策反转，企业站最终落在腾讯云。
+ * `docs/SZBOLENT_COM_CN_CUTOVER_CHECKLIST.md` 已于 2026-07-20 **CANCELLED**（存档）。
+ * 遗留线：个人域内容站 `szbolent.cn` / `www.szbolent.cn`（阿里云 `47.115.168.107`）、
+ *   `api.genz.ltd`（Cloudflare 前置）。
+ * ⚠️ `contracts/entry.json` 的 portal 站仍描述阿里云 47.115.168.107 线，与企业站现状不符（待重签契约）。
  */
 
 /**
@@ -217,7 +230,13 @@ export const seoConfig = {
     '昇腾 ISV',
     '昇腾认证服务商',
   ],
-  /** canonical / OG 口径：企业域 canonical 收敛到 www（与 nginx-tianyi-portal.conf 的 301 一致） */
+  /**
+   * canonical / OG 口径：企业域收敛到 www
+   * ⚠️ 与服务器现状不一致：`szbolent-portal-tencent` 里 `szbolent.com.cn` 与 `www` 同 server 块直出，
+   *    根域**没有** 301 → www（2026-09-13 实测两边均 200 同内容）。
+   *    待择一收敛：①站点 nginx 补 `if ($host = szbolent.com.cn) return 301 https://www...`；
+   *                 ②或把 canonical 改为根域。改前此处保持 www（与 OG/小程序业务域名口径一致）。
+   */
   siteUrl: 'https://www.szbolent.com.cn',
   ogImage: '/images/og-image.jpg',
 }
