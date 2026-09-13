@@ -1,4 +1,4 @@
-# Bolent Astra Child Theme — 部署说明
+# 深伯乐 Astra Child Theme — 部署说明
 
 ## 前置条件
 
@@ -14,12 +14,12 @@
 WordPress 后台 → 外观 → 主题 → 添加新主题 → 搜索 "Astra" → 安装 → 启用
 ```
 
-### 2. 安装 Bolent 子主题
+### 2. 安装 深伯乐 子主题
 将 `design-system/phase3-wordpress/astra-child/` 整个目录复制到 WordPress 的 `wp-content/themes/` 下：
 ```bash
 cp -r design-system/phase3-wordpress/astra-child /path/to/wp-content/themes/bolent-astra-child
 ```
-然后后台 → 外观 → 主题 → 启用 "Bolent Astra Child"
+然后后台 → 外观 → 主题 → 启用 "深伯乐 Astra Child"
 
 ### 3. 安装插件
 - Contact Form 7（插件市场搜索安装）
@@ -53,7 +53,7 @@ cp -r design-system/phase3-wordpress/astra-child /path/to/wp-content/themes/bole
 - Button Radius: `8px`
 
 ### 8. 设置首页模板
-1. 后台 → 页面 → 新建页面 → 模板选择 "Bolent 首页"
+1. 后台 → 页面 → 新建页面 → 模板选择 "深伯乐 首页"
 2. 后台 → 设置 → 阅读 → 首页显示 → 一个静态页面 → 选择刚创建的页面
 
 ## Docker 部署（本项目环境）

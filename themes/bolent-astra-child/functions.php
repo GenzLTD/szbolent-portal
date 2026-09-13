@@ -1,6 +1,6 @@
 <?php
 /**
- * Bolent Astra Child Theme — functions.php v2.0
+ * 深伯乐 Astra Child Theme — functions.php v2.0
  * 项目：szbolent-portal — HarmonyOS 生态服务商
  * 功能：样式加载、CPT 注册、导航菜单、CF7 支持、页面模板
  */
@@ -129,13 +129,13 @@ add_action('customize_register', 'bolent_astra_customizer_defaults', 20);
  * 5. 页面模板注册 — 7 个模板
  */
 function bolent_page_templates($templates) {
-    $templates['page-templates/page-home.php'] = __('Bolent 首页', 'bolent-astra-child');
-    $templates['page-templates/page-about.php'] = __('Bolent 关于我们', 'bolent-astra-child');
-    $templates['page-templates/page-services.php'] = __('Bolent 服务列表', 'bolent-astra-child');
-    $templates['page-templates/page-contact.php'] = __('Bolent 联系我们', 'bolent-astra-child');
-    $templates['page-templates/page-careers.php'] = __('Bolent 招贤纳士', 'bolent-astra-child');
-    $templates['page-templates/page-case-studies.php'] = __('Bolent 案例研究', 'bolent-astra-child');
-    $templates['page-templates/page-blog.php'] = __('Bolent 博客', 'bolent-astra-child');
+    $templates['page-templates/page-home.php'] = __('深伯乐 首页', 'bolent-astra-child');
+    $templates['page-templates/page-about.php'] = __('深伯乐 关于我们', 'bolent-astra-child');
+    $templates['page-templates/page-services.php'] = __('深伯乐 服务列表', 'bolent-astra-child');
+    $templates['page-templates/page-contact.php'] = __('深伯乐 联系我们', 'bolent-astra-child');
+    $templates['page-templates/page-careers.php'] = __('深伯乐 招贤纳士', 'bolent-astra-child');
+    $templates['page-templates/page-case-studies.php'] = __('深伯乐 案例研究', 'bolent-astra-child');
+    $templates['page-templates/page-blog.php'] = __('深伯乐 博客', 'bolent-astra-child');
     return $templates;
 }
 add_filter('theme_page_templates', 'bolent_page_templates');
@@ -223,13 +223,13 @@ if (!function_exists('bolent_get_svg_icon')) {
 
 /**
  * 11. WordPress Customizer — 首页内容面板
- * 「外观 → 自定义 → Bolent 首页内容」即可编辑 Hero/鸿蒙能力/Why Us/CTA
+ * 「外观 → 自定义 → 深伯乐 首页内容」即可编辑 Hero/鸿蒙能力/Why Us/CTA
  */
 function bolent_customizer_register($wp_customize) {
 
-    // ── Panel: Bolent 首页内容 ──
+    // ── Panel: 深伯乐 首页内容 ──
     $wp_customize->add_panel('bolent_home_panel', array(
-        'title'       => '🏠 Bolent 首页内容',
+        'title'       => '🏠 深伯乐 首页内容',
         'priority'    => 30,
     ));
 
@@ -356,9 +356,9 @@ function bolent_customizer_register($wp_customize) {
     ));
     $page_hero_defaults = array(
         'services' => array('title1' => '我们的', 'highlight' => '服务', 'subtitle' => '全方位 IT 服务 · 鸿蒙全栈能力', 'desc' => '以工程精度交付每一个项目，从鸿蒙生态到企业数字化'),
-        'about'    => array('title1' => '关于 ', 'highlight' => 'Bolent', 'subtitle' => 'HarmonyOS 生态服务商', 'desc' => '覆盖从芯片适配到应用分发的 HarmonyOS 全生态链路，为企业打造端到端的鸿蒙化解决方案'),
+        'about'    => array('title1' => '关于 ', 'highlight' => '深伯乐', 'subtitle' => 'HarmonyOS 生态服务商', 'desc' => '覆盖从芯片适配到应用分发的 HarmonyOS 全生态链路，为企业打造端到端的鸿蒙化解决方案'),
         'cases'    => array('title1' => '成功', 'highlight' => '案例', 'subtitle' => '以结果说话', 'desc' => '这是我们交付价值的证明'),
-        'careers'  => array('title1' => '加入 ', 'highlight' => 'Bolent', 'subtitle' => '共建鸿蒙生态 · 共创智能未来', 'desc' => '我们正在寻找对 HarmonyOS 生态充满热情的伙伴'),
+        'careers'  => array('title1' => '加入 ', 'highlight' => '深伯乐', 'subtitle' => '共建鸿蒙生态 · 共创智能未来', 'desc' => '我们正在寻找对 HarmonyOS 生态充满热情的伙伴'),
         'blog'     => array('title1' => '技术', 'highlight' => '博客', 'subtitle' => 'HarmonyOS · 技术实践 · 行业洞察', 'desc' => '分享鸿蒙生态开发经验与技术心得'),
         'contact'  => array('title1' => '联系', 'highlight' => '我们', 'subtitle' => '让我们一起探讨鸿蒙化方案', 'desc' => '无论是应用迁移、硬件适配还是生态共建，我们与您并肩前行'),
     );

@@ -1,5 +1,5 @@
 /**
- * Bolent 移动端汉堡菜单
+ * 深伯乐 移动端汉堡菜单
  */
 (function() {
     var toggle = document.querySelector('.bolent-mobile-toggle');

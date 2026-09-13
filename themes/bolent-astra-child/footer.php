@@ -1,6 +1,6 @@
 <?php
 /**
- * Bolent 自定义 Footer 模板 — HarmonyOS 生态服务商品牌
+ * 深伯乐 自定义 Footer 模板 — HarmonyOS 生态服务商品牌
  */
 if (!defined('ABSPATH')) exit;
 ?>
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) exit;
                     <path d="M18 4 Q30 12 18 30" stroke="#FFFFFF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
                     <circle cx="26" cy="12" r="3.5" fill="#9B85FF"/>
                 </svg>
-                <span class="bolent-logo-text" style="color:#fff">Bolent</span>
+                <span class="bolent-logo-text" style="color:#fff">深伯乐</span>
             </a>
             <p>HarmonyOS 生态服务商，提供鸿蒙应用开发、硬件适配、数字化与 IT 全栈解决方案。覆盖从芯片适配到应用分发的全生态链路。</p>
         </div>
@@ -60,7 +60,7 @@ if (!defined('ABSPATH')) exit;
         </div>
     </div>
     <div class="bolent-footer-bottom">
-        <span>&copy; <?php echo date('Y'); ?> Bolent. All rights reserved.</span>
+        <span>&copy; <?php echo date('Y'); ?> 深伯乐（深圳）科技有限公司. All rights reserved.</span>
         <span>www.szbolent.cn</span>
     </div>
 </footer>

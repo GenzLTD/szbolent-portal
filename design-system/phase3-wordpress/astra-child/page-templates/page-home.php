@@ -1,8 +1,8 @@
 <?php
 /**
- * Template Name: Bolent 首页
+ * Template Name: 深伯乐 首页
  * HarmonyOS 生态服务商品牌首页 v3.0 — 全内容 Customizer 可编辑
- * 「外观 → 自定义 → Bolent 首页内容」即可修改所有文案
+ * 「外观 → 自定义 → 深伯乐 首页内容」即可修改所有文案
  */
 if (!defined('ABSPATH')) exit;
 get_header();

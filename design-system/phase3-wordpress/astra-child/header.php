@@ -1,6 +1,6 @@
 <?php
 /**
- * Bolent 自定义 Header 模板 — HarmonyOS 生态服务商品牌
+ * 深伯乐 自定义 Header 模板 — HarmonyOS 生态服务商品牌
  */
 if (!defined('ABSPATH')) exit;
 ?>
@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) exit;
                 <path d="M18 4 Q30 12 18 30" stroke="#1A73E8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
                 <circle cx="26" cy="12" r="3.5" fill="#6B4EFF"/>
             </svg>
-            <span class="bolent-logo-text">Bolent</span>
+            <span class="bolent-logo-text">深伯乐</span>
         </a>
 
         <!-- 导航菜单 -->

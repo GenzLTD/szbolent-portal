@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Bolent 案例研究
+ * Template Name: 深伯乐 案例研究
  * 读取 bolent_case CPT 渲染案例列表
  */
 if (!defined('ABSPATH')) exit;

@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Bolent 博客
+ * Template Name: 深伯乐 博客
  * 读取标准 WP posts 渲染博客列表
  */
 if (!defined('ABSPATH')) exit;

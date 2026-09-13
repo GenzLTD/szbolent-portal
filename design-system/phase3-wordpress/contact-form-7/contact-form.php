@@ -108,6 +108,6 @@
 /**
  * 附加：将 CF7 表单嵌入页面
  * 在 Contact 页面模板中调用：
- * echo do_shortcode('[contact-form-7 id="表单ID" title="Bolent 联系表单"]');
+ * echo do_shortcode('[contact-form-7 id="表单ID" title="深伯乐 联系表单"]');
  */
 ?>

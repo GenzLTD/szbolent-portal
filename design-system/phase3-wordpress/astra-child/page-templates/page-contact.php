@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Bolent 联系我们
+ * Template Name: 深伯乐 联系我们
  * 含联系信息展示 + Contact Form 7 表单
  */
 if (!defined('ABSPATH')) exit;

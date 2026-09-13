@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Bolent 关于我们
+ * Template Name: 深伯乐 关于我们
  * HarmonyOS 生态服务商品牌
  */
 if (!defined('ABSPATH')) exit;
@@ -11,7 +11,7 @@ get_header();
 <section class="bolent-hero" style="min-height:60vh;">
     <div class="bolent-hero-grid"></div>
     <div class="bolent-hero-content">
-        <h1><?php echo esc_html(bolent_mod('page_about_title1', '关于 ')); ?><span class="bolent-hero-highlight"><?php echo esc_html(bolent_mod('page_about_highlight', 'Bolent')); ?></span></h1>
+        <h1><?php echo esc_html(bolent_mod('page_about_title1', '关于 ')); ?><span class="bolent-hero-highlight"><?php echo esc_html(bolent_mod('page_about_highlight', '深伯乐')); ?></span></h1>
         <p class="bolent-hero-subtitle"><?php echo esc_html(bolent_mod('page_about_subtitle', 'HarmonyOS 生态服务商')); ?></p>
         <p class="bolent-hero-desc"><?php echo esc_html(bolent_mod('page_about_desc', '覆盖从芯片适配到应用分发的 HarmonyOS 全生态链路，为企业打造端到端的鸿蒙化解决方案')); ?></p>
     </div>
@@ -22,9 +22,9 @@ get_header();
     <div class="bolent-container">
         <div style="max-width:800px;margin:0 auto;">
             <span class="bolent-section-eyebrow">ABOUT US</span>
-            <h2 class="bolent-section-title" style="text-align:left;">谁是 Bolent</h2>
+            <h2 class="bolent-section-title" style="text-align:left;">谁是深伯乐</h2>
             <p style="font-size:17px;color:var(--bolent-text-secondary);line-height:1.8;margin-bottom:24px;">
-                Bolent 是一家 HarmonyOS 生态服务商，专注于鸿蒙应用开发、硬件适配、原子化服务与企业数字化解决方案。
+                深伯乐是一家 HarmonyOS 生态服务商，专注于鸿蒙应用开发、硬件适配、原子化服务与企业数字化解决方案。
                 我们覆盖从芯片适配到应用分发的全生态链路，帮助企业完成鸿蒙化转型。
             </p>
             <p style="font-size:17px;color:var(--bolent-text-secondary);line-height:1.8;margin-bottom:24px;">

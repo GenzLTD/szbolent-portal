@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Bolent 服务列表
+ * Template Name: 深伯乐 服务列表
  * 读取 bolent_service CPT 渲染所有服务
  */
 if (!defined('ABSPATH')) exit;
