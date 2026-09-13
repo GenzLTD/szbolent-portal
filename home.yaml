@@ -1,9 +1,9 @@
 - generic [ref=f2e4]:
   - banner [ref=f2e5]:
     - generic [ref=f2e7]:
-      - link "Bolent" [ref=f2e8] [cursor=pointer]:
+      - link "深伯乐" [ref=f2e8] [cursor=pointer]:
         - /url: /
-        - img "Bolent" [ref=f2e9]
+        - img "深伯乐" [ref=f2e9]
       - navigation [ref=f2e10]:
         - list [ref=f2e11]:
           - listitem [ref=f2e12]:
@@ -220,9 +220,9 @@
   - contentinfo [ref=f2e267]:
     - generic [ref=f2e270]:
       - generic [ref=f2e271]:
-        - link "Bolent" [ref=f2e273] [cursor=pointer]:
+        - link "深伯乐" [ref=f2e273] [cursor=pointer]:
           - /url: /
-          - img "Bolent" [ref=f2e274]
+          - img "深伯乐" [ref=f2e274]
         - paragraph [ref=f2e275]:
           - text: 您值得信赖的 IT 合作伙伴
           - text: 咨询 | 方案 | 外包服务
@@ -282,7 +282,7 @@
             - generic [ref=f2e323]: hello@szbolent.com.cn
     - generic [ref=f2e326]:
       - paragraph [ref=f2e327]:
-        - text: © 2026 深圳伯乐特科技有限公司 |
+        - text: © 2026 深伯乐（深圳）科技有限公司 |
         - link "粤ICP备2024000000号" [ref=f2e328] [cursor=pointer]:
           - /url: https://beian.miit.gov.cn/
       - generic [ref=f2e329]:

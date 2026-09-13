@@ -4,6 +4,8 @@
 
 自 `szbolent-portal@74ccc9b`（分支 `cursor/ascend-isv-certification`）迁出。旧仓不再演进，本仓是门户与多端组合层的**唯一开发树**。
 
+继承自 [SurfaceZervi/archive-gitee/szbenyx/bolent/web-public](file:///Users/jason/SurfaceZervi/archive-gitee/szbenyx/bolent/web-public)，集成 WordPress headless、深伯乐 诗词 API 与可选 Tatha `poetry_rag`。
+
 ## 持有与边界
 
 Variety 持有**入口层**的四件事，且只持有这四件：
