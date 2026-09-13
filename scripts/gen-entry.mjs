@@ -51,6 +51,14 @@ function validate(c) {
   for (const [name, up] of Object.entries(c.upstreams || {})) {
     if (!up.prod) errs.push(`上游 ${name} 缺少 prod 目标`)
   }
+
+  // 站点登记自检：渲染站点必须有 file；「仅登记」站点必须写 note 说明原因与真源
+  for (const [name, site] of Object.entries(c.sites || {})) {
+    if (!site.file) errs.push(`站点 ${name} 缺少 file`)
+    if (site.render === false && !site.note) {
+      errs.push(`站点 ${name} 标了 render:false（仅登记不渲染），必须写 note 说明原因与真源`)
+    }
+  }
   return errs
 }
 
@@ -160,6 +168,17 @@ const RENDERERS = { portal: renderPortal, api: renderApi }
 const artifacts = []
 
 for (const [key, site] of Object.entries(contract.sites || {})) {
+  // 仅登记不渲染：含 SSL/ACME 等生成器未覆盖能力的站点，真源是机器上的文件（见 site.note）
+  if (site.render === false) {
+    const refPath = join(ROOT, site.file)
+    if (!existsSync(refPath)) {
+      console.error(`[gen-entry] ✗ 登记不渲染的站点，参考副本不存在: ${site.file}`)
+      process.exit(1)
+    }
+    console.log(`[gen-entry] – 跳过（仅登记不渲染）: ${key} → ${site.file}`)
+    continue
+  }
+
   const render = RENDERERS[key]
   if (!render) {
     console.error(`[gen-entry] 未知站点类型: ${key}`)

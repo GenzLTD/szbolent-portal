@@ -49,7 +49,9 @@
   "sites": {
     "portal": {
       "file": "nginx.conf",
-      "desc": "门户入口 — 阿里云 47.115.168.107",
+      "desc": "门户入口 — 阿里云 47.115.168.107（⚠️ 契约漂移，见 note）",
+      "status": "drifted",
+      "note": "2026-09-13 实测：szbolent.com.cn / www.szbolent.com.cn / api.szbolent.com.cn 三条 A 记录均已指向腾讯云 1.14.202.161，企业站已不在本机。据 2026-09-12 改造记录，本机（阿里云）现仅服务个人域内容站：szbolent.cn → 个人博客 WP(:8081)、www.szbolent.cn → 诗词 H5。本文件仍描述旧拓扑（门户 SPA + /v1 + /wp-json），重签待办见 contracts/README.md「已知漂移」。",
       "listen": 80,
       "defaultServer": true,
       "serverNames": [
@@ -78,6 +80,13 @@
       "defaultServer": false,
       "serverNames": ["api.genz.ltd"],
       "allToUpstream": "looma-local"
+    },
+    "enterprise": {
+      "file": "nginx-tencent-portal.conf",
+      "render": false,
+      "desc": "企业站 — 腾讯云 1.14.202.161（szbolent.com.cn / www / api）",
+      "serverNames": ["szbolent.com.cn", "www.szbolent.com.cn", "api.szbolent.com.cn"],
+      "note": "登记但不渲染：含 SSL + ACME + 80→443 跳转（443 与 301 段由 certbot 注入改写），生成器目前只覆盖 HTTP 明文站点。真源 = 机器上 /etc/nginx/sites-available/szbolent-portal-tencent；仓内 nginx-tencent-portal.conf 为 2026-09-13 取回的参考副本。链路：/ → SPA dist；/v1/ 与 /health → 本机 Looma 127.0.0.1:5200；/wp-json/ → 本机 WP 127.0.0.1:8080。升级为渲染站点需先给生成器补 SSL/ACME 能力。"
     }
   }
 }
