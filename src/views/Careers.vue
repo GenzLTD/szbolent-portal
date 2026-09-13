@@ -474,7 +474,8 @@ const resetFilters = () => {
 
 // 申请职位
 const showApplyModal = ref(false)
-const selectedJob = ref(null)
+/** 当前申请职位；类型取自 jobs 元素，避免 ref(null) 推成 never 导致模板取 .title 报错 */
+const selectedJob = ref<(typeof jobs.value)[number] | null>(null)
 const applicationForm = ref({
   name: '',
   email: '',

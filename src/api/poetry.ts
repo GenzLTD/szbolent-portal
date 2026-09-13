@@ -221,8 +221,12 @@ export const poetryApi = {
     return toPoem(data, { fullContent: data.content })
   },
 
-  /** 随机发现 → Looma GET /v1/poetry/random */
-  async getRandom(params?: { dynasty?: string; season?: string; theme?: string }): Promise<Poem> {
+  /**
+   * 随机发现 → Looma GET /v1/poetry/random
+   * ⚠️ Looma /random 目前只接受 count，dynasty/season/theme 传了也会被忽略，
+   *    故形参标 `_params` 占位（保留签名兼容调用方），待后端支持后再接线。
+   */
+  async getRandom(_params?: { dynasty?: string; season?: string; theme?: string }): Promise<Poem> {
     const count = 1
     const { data } = await axios.get<{ results: LoomaRandomItem[]; count: number }>(
       v1('/random'),

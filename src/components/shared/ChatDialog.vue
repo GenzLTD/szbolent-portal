@@ -10,7 +10,7 @@
  */
 import { ref, computed, nextTick, watch } from 'vue'
 import { MessageCircle, Send, X, Loader2, ShieldCheck, LogIn, Trash2 } from 'lucide-vue-next'
-import { ask, login, getToken, setToken, grantConsent } from '@/api/looma'
+import { ask, login, setToken, grantConsent } from '@/api/looma'
 import { usePermission } from '@/composables/usePermission'
 
 // ── 权限状态 ──
@@ -111,7 +111,7 @@ async function doGrantConsent() {
     inputRef.value?.focus()
   } catch (e: any) {
     const msg = e?.response?.data?.detail || e?.message || '授权失败，请重试'
-    messages.value.push({ role: 'system', content: msg, timestamp: Date.now() })
+    addSystemMessage(msg)
   } finally {
     consentLoading.value = false
   }

@@ -198,5 +198,5 @@ interface GrantConsentResponse {
  * scope 示例：'ask_rag'（RAG 检索授权）、'did_verify'（DID 验证授权）
  */
 export function grantConsent(scope: string): Promise<GrantConsentResponse> {
-  return apiPost<GrantConsentResponse>('/compliance/consent/grant', { scope } as GrantConsentRequest)
+  return apiPost<GrantConsentResponse>('/compliance/consent/grant', { scope } satisfies GrantConsentRequest)
 }

@@ -179,8 +179,9 @@ export function usePermission() {
       const res = await apiPost<PermissionCheckResponse>('/permissions/check', {
         resource,
         action
-      } as PermissionCheckRequest)
-      permissionCache.set(cacheKey, res.allowed ? 'allowed' : 'denied')
+      } satisfies PermissionCheckRequest)
+      // 缓存值与 loadPermissions() 同型（string[]）：命中判定走 includes('allowed')
+      permissionCache.set(cacheKey, res.allowed ? ['allowed'] : [])
       return res.allowed
     } catch {
       // 请求失败默认拒绝
