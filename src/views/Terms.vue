@@ -1,11 +1,11 @@
 <template>
   <div class="legal-page">
     <h1>用户协议</h1>
-    <p class="update-date">最后更新日期：2026年7月16日</p>
+    <p class="update-date">最后更新日期：2026年9月11日</p>
 
     <section>
       <h2>1. 服务说明</h2>
-      <p>www.szbolent.cn（以下简称"本网站"）由深伯乐（深圳）科技有限公司运营，是一个智能化诗词鉴赏与数智企业服务门户。</p>
+      <p>www.szbolent.com.cn（以下简称"本网站"）由{{ companyInfo.legalName }}运营，是一个智能化诗词鉴赏与数智企业服务门户。</p>
     </section>
 
     <section>
@@ -20,7 +20,7 @@
 
     <section>
       <h2>4. 知识产权</h2>
-      <p>本网站的原创内容（包括但不限于页面设计、代码、品牌标识）著作权归深伯乐（深圳）科技有限公司所有。诗词原文属于公共领域。未经授权，不得复制、修改或传播本网站的原创内容。</p>
+      <p>本网站的原创内容（包括但不限于页面设计、代码、品牌标识）著作权归{{ companyInfo.legalName }}所有。诗词原文属于公共领域。未经授权，不得复制、修改或传播本网站的原创内容。</p>
     </section>
 
     <section>
@@ -35,6 +35,10 @@
     </section>
   </div>
 </template>
+
+<script setup lang="ts">
+import { companyInfo } from '@/config/company'
+</script>
 
 <style scoped>
 .legal-page { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; line-height: 1.8; color: #333; }

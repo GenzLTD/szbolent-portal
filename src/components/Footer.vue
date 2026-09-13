@@ -83,7 +83,29 @@
     <div class="footer-bottom">
       <div class="container">
         <div class="footer-bottom-content">
-          <p>&copy; {{ currentYear }} 深伯乐（深圳）科技有限公司 | <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">粤ICP备2026134984号-1</a></p>
+          <p class="footer-legal">
+            &copy; {{ currentYear }} {{ companyInfo.legalName }}
+            <span class="sep">|</span>
+            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">{{ companyInfo.icp }}</a>
+            <!-- 公安联网备案号：未下发时不渲染，避免出现无效链接 -->
+            <template v-if="companyInfo.gongan.code">
+              <span class="sep">|</span>
+              <a
+                class="gongan"
+                :href="companyInfo.gongan.url"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  v-if="companyInfo.gongan.icon"
+                  :src="companyInfo.gongan.icon"
+                  alt="公安备案"
+                  class="gongan-icon"
+                />
+                {{ companyInfo.gongan.label }}
+              </a>
+            </template>
+          </p>
           <div class="footer-bottom-links">
             <router-link to="/privacy">隐私政策</router-link>
             <router-link to="/terms">服务条款</router-link>
@@ -99,6 +121,7 @@ import { computed, onMounted } from 'vue'
 import { Github, MapPin, Mail } from 'lucide-vue-next'
 import { useDynamicRouter } from '@/composables/useDynamicRouter'
 import { PLANETX_BASE } from '@/config/growth'
+import { companyInfo } from '@/config/company'
 
 const { menus, loadMenus } = useDynamicRouter()
 
@@ -258,6 +281,39 @@ const currentYear = computed(() => new Date().getFullYear())
         margin: 0;
         color: rgba(255, 255, 255, 0.7);
         font-size: 14px;
+      }
+
+      .footer-legal {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        line-height: 1.6;
+
+        .sep {
+          opacity: 0.35;
+        }
+
+        a {
+          color: rgba(255, 255, 255, 0.7);
+          transition: color 0.3s;
+
+          &:hover {
+            color: #fff;
+          }
+        }
+
+        .gongan {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+
+          .gongan-icon {
+            width: 16px;
+            height: 16px;
+            display: block;
+          }
+        }
       }
 
       .footer-bottom-links {
