@@ -2,7 +2,8 @@ name: Deploy Portal SPA to Tencent (1.14.202.161)
 
 on:
   push:
-    branches: [main]
+    tags:
+      - 'v*'
     paths:
       - 'src/**'
       - 'contracts/**'
