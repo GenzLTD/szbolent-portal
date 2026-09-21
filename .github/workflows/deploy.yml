@@ -1,101 +1,78 @@
-name: Deploy WordPress to Aliyun
+name: Deploy Portal SPA to Tencent (1.14.202.161)
 
 on:
   push:
     branches: [main]
+    paths:
+      - 'src/**'
+      - 'contracts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.ts'
+      - 'index.html'
+      - 'nginx/nginx-tencent-portal.conf'
+      - '.github/workflows/deploy-tencent.yml'
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node 20
+        uses: actions/setup-node@v4 with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Build SPA
+        run: npm run build            # 输出 dist/
+
       - name: Setup SSH
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY_TENCENT }}
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
           config: |
-            Host deploy
-              HostName 47.115.168.107
-              User root
+            Host tencent
+              HostName 1.14.202.161
+              User ubuntu                   # 远端机器用户 ≠ 阿里云的 root
               StrictHostKeyChecking no
 
-      - name: Ensure rsync on server
-        run: |
-          ssh deploy 'if ! command -v rsync &>/dev/null; then yum install -y rsync 2>/dev/null || dnf install -y rsync 2>/dev/null || (apt-get update -qq && apt-get install -y -qq rsync); fi'
+      - name: Verify SSH connectivity
+        run: ssh tencent 'echo "tencent-deploy-ready"'
 
-      - name: Create deploy directory
+      - name: Sync dist + nginx config (暂存)
         run: |
-          ssh deploy 'mkdir -p /opt/bolent-wp/themes/bolent-astra-child'
+          ssh tencent 'mkdir -p /var/www/szbolent-portal/dist /var/www/szbolent-portal/nginx.new'
+          rsync -avz --delete dist/ tencent:/var/www/szbolent-portal/dist/
+          rsync -avz nginx/nginx-tencent-portal.conf tencent:/var/www/szbolent-portal/nginx.new/szbolent-portal-tencent.conf
 
-      - name: Deploy WordPress theme
+      - name: Install nginx site + reload (配置变更时)
         run: |
-          rsync -avz --delete \
-            design-system/phase3-wordpress/astra-child/ \
-            deploy:/opt/bolent-wp/themes/bolent-astra-child/
-
-      - name: Deploy Docker Compose & nginx config (暂存)
-        run: |
-          rsync -avz docker-compose.wp.prod.yml deploy:/opt/bolent-wp/docker-compose.wp.prod.yml.new
-          rsync -avz nginx.conf deploy:/var/www/szbolent-portal/nginx/szbolent.conf.new
-
-      - name: Start WordPress (首次) / 重启容器 (配置变更时)
-        run: |
-          ssh deploy '
-            cd /opt/bolent-wp
-
-            # 首次：创建 .env + 启动容器
-            if [ ! -f .env ]; then
-              cat > .env <<EOF
-          MYSQL_ROOT_PASSWORD=$(openssl rand -hex 16)
-          MYSQL_DATABASE=bolent_wp
-          MYSQL_USER=wordpress
-          MYSQL_PASSWORD=$(openssl rand -hex 16)
-          WP_HOME=http://47.115.168.107
-          WP_SITEURL=http://47.115.168.107
-          EOF
-              echo "✅ .env created — 首次启动"
-              docker compose -f docker-compose.wp.prod.yml pull
-              docker compose -f docker-compose.wp.prod.yml up -d
-              echo "✅ WordPress 容器已启动"
+          ssh tencent bash -s <<'ENDSSH'
+            set -e
+            SRC=/var/www/szbolent-portal/nginx.new/szbolent-portal-tencent.conf
+            DST=/etc/nginx/sites-enabled/szbolent-portal-tencent            if diff -q "$SRC" "$DST" >/dev/null 2>&1; then
+              echo "⏭ nginx 站点配置无变化，跳过 reload"
+              rm -f "$SRC"
             else
-              # 比较 compose 文件是否有变化，无变化则跳过
-              if [ -f docker-compose.wp.prod.yml.new ] && ! diff -q docker-compose.wp.prod.yml docker-compose.wp.prod.yml.new >/dev/null 2>&1; then
-                mv docker-compose.wp.prod.yml.new docker-compose.wp.prod.yml
-                docker compose -f docker-compose.wp.prod.yml up -d
-                echo "✅ compose 文件变更，容器已更新"
-              elif [ -f docker-compose.wp.prod.yml.new ]; then
-                rm docker-compose.wp.prod.yml.new
-                echo "⏭ compose 无变化，跳过容器重启"
-              fi
-              echo "⏭ 主题文件已通过 rsync 即时生效，无需重启"
-            fi
-          '
-
-      - name: Reload nginx (仅配置变更时)
-        run: |
-          ssh deploy '
-            SRC=/var/www/szbolent-portal/nginx/szbolent.conf.new
-            DST=/etc/nginx/conf.d/00-szbolent.conf
-
-            if [ -f "$SRC" ]; then
               cp "$SRC" "$DST"
-              rm "$SRC"
-              for f in /etc/nginx/conf.d/*.conf; do
-                [ "$f" = "$DST" ] && continue
-                sed -i "s/default_server//g" "$f"
-              done
-              nginx -t && systemctl reload nginx && echo "✅ Nginx 配置已更新"
-            else
-              echo "⏭ nginx 配置无变化，跳过重载"
+              rm -f "$SRC"
+              nginx -t && systemctl reload nginx
+              echo "✅ Nginx 站点 szbolent-portal-tencent 已更新并 reload"
             fi
-          '
+          ENDSSH
 
       - name: Health check
         run: |
-          sleep 10
-          ssh deploy 'curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8080 | grep -q "200\|301\|302" && echo "✅ WordPress responding" || echo "⚠️ WordPress not responding yet"'
+          sleep 5
+          curl -fsS -o /dev/null -w "%{http_code}\n" https://www.szbolent.com.cn | grep -q "^200$" \
+            && echo "✅ https://www.szbolent.com.cn 返回 200" \
+            || (echo "⚠️官网未响应 200" && exit 1)
