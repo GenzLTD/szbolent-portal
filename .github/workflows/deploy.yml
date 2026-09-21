@@ -4,15 +4,6 @@ on:
   push:
     tags:
       - 'v*'
-    paths:
-      - 'src/**'
-      - 'contracts/**'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'vite.config.ts'
-      - 'index.html'
-      - 'nginx/nginx-tencent-portal.conf'
-      - '.github/workflows/deploy-tencent.yml'
   workflow_dispatch:
 
 jobs:
