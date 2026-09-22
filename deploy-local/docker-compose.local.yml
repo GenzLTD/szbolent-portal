@@ -1,0 +1,120 @@
+# szbolent-portal 本地仿真环境（最小集 3 容器）
+# 用途：跑通 nginx 反代 + SPA 静态服务 + 反向代理链路
+# 不带 ollama / chromadb / pgvector / redis —— looma 依赖暂未起
+# 跑通基本链路后用 `docker compose --profile full up -d` 加全量
+#
+# 启动：
+#   cd ~/Projects/szbolent-portal/deploy-local
+#   docker compose -f docker-compose.local.yml up -d
+# 关闭：
+#   docker compose -f docker-compose.local.yml down
+# 数据清零（保留 volumes）：
+#   docker compose -f docker-compose.local.yml down --remove-orphans
+# 全量清理（连 volumes 也删）：
+#   docker compose -f docker-compose.local.yml down -v
+
+name: szbolent-portal-local
+
+services:
+  # ===== looma 占位后端（最小 Flask，验证 /v1/ 反代链路）=====
+  # 注意：当前是 stub，正式对接 looma-zervi 时改 image 为 looma-backend:xxx
+  looma-backend-stub:
+    image: python:3.11-slim
+    container_name: looma-backend-stub-local
+    working_dir: /app
+    ports:
+      - "127.0.0.1:5200:5200"
+    volumes:
+      - ./looma-stub/app.py:/app/app.py:ro
+    command: >-
+      bash -c "pip install --quiet --no-cache-dir flask flask-cors && python app.py"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; r=urllib.request.urlopen('http://127.0.0.1:5200/health',timeout=3); sys.exit(0 if r.status==200 else 1)\""]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  # ===== WordPress（真实环境，验证 /wp-json/ 反代 + 博客数据）=====
+  bolent_wp:
+    image: wordpress:latest
+    container_name: bolent-wp-local
+    ports:
+      - "127.0.0.1:8080:80"
+    environment:
+      WORDPRESS_DB_HOST: bolent_wp_mysql
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wp_local_pass
+      WORDPRESS_DB_NAME: bolent_wp
+    depends_on:
+      bolent_wp_mysql:
+        condition: service_healthy
+    volumes:
+      - wp-content:/var/www/html/wp-content
+    restart: unless-stopped
+
+  bolent_wp_mysql:
+    image: mysql:8.0
+    container_name: bolent-wp-mysql-local
+    ports:
+      - "127.0.0.1:3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root_local_pass
+      MYSQL_DATABASE: bolent_wp
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wp_local_pass
+    command:
+      - --default-authentication-plugin=mysql_native_password
+    volumes:
+      - wp-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "wordpress", "-pwp_local_pass"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  wp-content:
+  wp-mysql-data:
+
+# =============================================================
+# 可选全量（后续启用）：looma 完整依赖 4 容器
+# 启动方式：docker compose -f docker-compose.local.yml --profile full up -d
+# =============================================================
+# x-looma-common: &looma-common
+#   restart: unless-stopped
+#
+# x-looma-volumes: &main-job
+#   ollama-data:/root/.ollama
+#
+# profiles: ["full"]
+#   ollama:
+#     image: ollama/ollama:latest
+#     container_name: ollama-local
+#     ports: ["127.0.0.1:11434:11434"]
+#     <<: *looma-common
+#     volumes:
+#       - ollama-data:/root/.ollama
+#   chromadb:
+#     image: chromadb/chroma:latest
+#     container_name: chromadb-local
+#     ports: ["127.0.0.1:8000:8000"]
+#     <<: *looma-common
+#     volumes:
+#       - chroma-data:/chroma/chroma
+#   redis:
+#     image: redis:7-alpine
+#     container_name: redis-local
+#     ports: ["127.0.0.1:6379:6379"]
+#     <<: *looma-common
+#   pgvector:
+#     image: pgvector/pgvector:pg17
+#     container_name: pgvector-local
+#     ports: ["127.0.0.1:5432:5432"]
+#     environment:
+#       POSTGRES_PASSWORD: postgres
+#       POSTGRES_DB: looma
+#     <<: *looma-common
+#     volumes:
+#       - pgvector-data:/var/lib/postgresql/data
