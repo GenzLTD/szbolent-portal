@@ -6,11 +6,16 @@ import { useDynamicRouter } from '@/composables/useDynamicRouter'
  * 路由架构说明
  * ─────────────
  * 静态路由（本文件）：核心 layout + Looma 诗词专区 + 404 + 必要 fallback
- * 动态路由（Page Engine :5300）：blog / careers / 未来新增页面
+ * 动态路由（中间层 GET /v1/menus）：未来新增页面（blog / careers 已于 2026-09-22 补静态兜底）
  *
  * 注入方式：loadMenus(router, 'szbolent', undefined, 'main')
  *   → 动态路由作为 'main' (MainLayout) 的子路由注入，与 Header 菜单同源
  *   → 冲突检查：已存在同 path 的静态路由不会被覆盖
+ *
+ * ⚠️ 依赖前提：中间层的 GET /v1/menus 必须真实存在（Page Engine 已退役，
+ *   契约由 Zeroclaw 中间层承接）。截至 2026-09-22 生产返回 404
+ *   （详见下方 blog / careers 注释），所有"只靠动态注入"的路径都会 404，
+ *   故关键页一律留静态兜底。
  */
 
 const routes: RouteRecordRaw[] = [
@@ -43,7 +48,16 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/ServiceDetail.vue'),
         meta: { title: '服务详情' }
       },
-      // blog 列表可由 Page Engine 动态注入；详情带 :slug，静态兜底（菜单通常不挂参数路由）
+      // blog 列表：静态兜底（Page Engine 注入不可用时仍可直达）
+      // 2026-09-22 补：生产 GET /v1/menus?product=szbolent 返 404（后端未实现），
+      //   loadMenus() 抛错被吞 → 动态路由从未注入 → /blog 落 404。
+      //   静态注册后 loadMenus 的冲突检查会跳过同 path，Page Engine 就绪后可接管新增页。
+      {
+        path: 'blog',
+        name: 'Blog',
+        component: () => import('@/views/Blog.vue'),
+        meta: { title: '博客' }
+      },
       {
         path: 'blog/:slug',
         name: 'BlogDetail',
@@ -62,7 +76,14 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/CaseStudyDetail.vue'),
         meta: { title: '案例详情' }
       },
-      // careers → 由 Page Engine 动态路由管理
+      // careers：静态兜底（同上，Page Engine 注入不可用时 /careers 会 404）
+      //   入口：About.vue「查看职位」按钮
+      {
+        path: 'careers',
+        name: 'Careers',
+        component: () => import('@/views/Careers.vue'),
+        meta: { title: '加入我们' }
+      },
       {
         path: 'contact',
         name: 'Contact',
