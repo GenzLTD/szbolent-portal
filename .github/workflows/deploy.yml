@@ -45,14 +45,15 @@ jobs:
         run: |
           ssh tencent 'mkdir -p /var/www/szbolent-portal/dist /var/www/szbolent-portal/nginx.new'
           rsync -avz --delete dist/ tencent:/var/www/szbolent-portal/dist/
-          rsync -avz nginx/nginx-tencent-portal.conf tencent:/var/www/szbolent-portal/nginx.new/szbolent-portal-tencent.conf
+          rsync -avz nginx-tencent-portal.conf tencent:/var/www/szbolent-portal/nginx.new/szbolent-portal-tencent.conf
 
       - name: Install nginx site + reload (配置变更时)
         run: |
           ssh tencent bash -s <<'ENDSSH'
             set -e
             SRC=/var/www/szbolent-portal/nginx.new/szbolent-portal-tencent.conf
-            DST=/etc/nginx/sites-enabled/szbolent-portal-tencent            if diff -q "$SRC" "$DST" >/dev/null 2>&1; then
+            DST=/etc/nginx/sites-enabled/szbolent-portal-tencent
+            if diff -q "$SRC" "$DST" >/dev/null 2>&1; then
               echo "⏭ nginx 站点配置无变化，跳过 reload"
               rm -f "$SRC"
             else
