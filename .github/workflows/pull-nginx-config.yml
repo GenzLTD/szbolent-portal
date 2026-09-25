@@ -1,0 +1,25 @@
+name: Pull live nginx config (one-off)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup SSH
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          config: |
+            Host tencent
+              HostName ${{ secrets.DEPLOY_HOST }}
+              User ${{ secrets.DEPLOY_USER }}
+              StrictHostKeyChecking no
+
+      - name: Dump live nginx config
+        run: |
+          echo "===NGINX_BEGIN==="
+          ssh tencent 'cat "$(readlink -f /etc/nginx/sites-enabled/szbolent-portal-tencent)"'
+          echo "===NGINX_END==="
