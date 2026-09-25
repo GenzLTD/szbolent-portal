@@ -14,8 +14,8 @@ jobs:
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
           config: |
             Host tencent
-              HostName ${{ secrets.DEPLOY_HOST }}
-              User ${{ secrets.DEPLOY_USER }}
+              HostName 1.14.202.161
+              User ubuntu
               StrictHostKeyChecking no
 
       - name: Dump live nginx config
